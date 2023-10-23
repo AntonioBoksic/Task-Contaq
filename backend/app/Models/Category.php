@@ -13,4 +13,9 @@ class Category extends Model
         'name',
         'description',
     ];
+
+    // una categoria può appartenere a multipli ticket
+    public function tickets() {
+        return $this->hasMany(Ticket::class);
+    }
 }
