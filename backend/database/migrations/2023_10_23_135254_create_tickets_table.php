@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
 
             $table->string('title');
-            $table->string('status');
+            $table->enum('status', ['aperto', 'in lavorazione', 'chiuso'])->default('aperto');
 
             $table->timestamps();
         });
