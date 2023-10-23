@@ -39,6 +39,16 @@
                             </div>
                         </div>
 
+                        <!-- qui ho aggiunto la selezione del ruolo operatore/tecnico -->
+                        <div class="mt-4">
+                            <label for="role" class="block font-medium text-sm text-gray-700">{{ __('Role') }}</label>
+                            <select name="role" id="role" required class="form-input rounded-md shadow-sm block mt-1 w-full">
+                                <option value="operator">Operatore</option>
+                                <option value="technician">Tecnico</option>
+                            </select>
+                        </div>
+
+
                         <div class="mb-4 row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('Password') }}</label>
 
