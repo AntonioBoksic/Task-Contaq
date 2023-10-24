@@ -12,6 +12,8 @@ class Ticket extends Model
     protected $fillable = [
         'title',
         'status',
+        'category_id',
+        'user_id',
     ];
 
     // un ticket può avere solo una categoria

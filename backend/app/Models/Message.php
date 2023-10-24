@@ -11,6 +11,8 @@ class Message extends Model
 
     protected $fillable = [
         'content',
+        'ticket_id',
+        'user_id',
     ];
 
     // un messaggio può appartenere solo ad un ticket
