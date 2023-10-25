@@ -16,8 +16,12 @@
       </ul>
     </div>
 
-    <div class="create-ticket">
+    <div class="create-message">
       <h4>Crea un nuovo messaggio</h4>
+      <textarea
+        v-model="newMessageContent"
+        placeholder="Scrivi il tuo messaggio..."></textarea>
+      <button @click="createMessage">Invia</button>
     </div>
   </div>
 </template>
@@ -32,7 +36,8 @@ export default {
   data() {
     return {
       store,
-      messages: [],
+      messages: [], //su questo faccio il vfor e lo popolo con la index
+      newMessageContent: '', // per memorizzare il contenuto del nuovo messaggio
     };
   },
   methods: {
@@ -45,6 +50,39 @@ export default {
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
 
       return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+    async createMessage() {
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
+
+        const response = await axios.post(
+          `http://localhost:8001/api/tickets/${this.ticketId}/messages`,
+          { content: this.newMessageContent },
+          config
+        );
+
+        if (response.status === 201) {
+          this.messages.push(response.data.data); // Aggiungi il nuovo messaggio alla lista
+          this.newMessageContent = ''; // Pulisci il campo del messaggio
+          alert(response.data.message); // Mostra un messaggio di conferma
+        }
+      } catch (error) {
+        console.error('Errore nella creazione del messaggio:', error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert(error.response.data.message); // ,ostra un messaggio di errore dal backend
+        } else {
+          alert('Errore nella creazione del messaggio.');
+        }
+      }
     },
   },
   async mounted() {
