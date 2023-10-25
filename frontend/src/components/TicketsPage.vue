@@ -14,6 +14,7 @@
             <th>Category</th>
             <th>Created at</th>
             <th>Status</th>
+            <th>Azioni</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,9 @@
             <td>{{ ticket.category_id }}</td>
             <td>{{ formatDateTime(ticket.created_at) }}</td>
             <td>{{ ticket.status }}</td>
+            <td>
+              <button @click="deleteTicket(ticket.id)">Elimina</button>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -114,6 +118,47 @@ export default {
           alert(error.response.data.message);
         } else {
           alert('Si è verificato un errore nella creazione del ticket.');
+        }
+      }
+    },
+    async deleteTicket(ticketId) {
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
+
+        const response = await axios.delete(
+          `http://localhost:8001/api/tickets/${ticketId}`,
+          config
+        );
+
+        console.log(response);
+
+        if (response.status === 200) {
+          // rimuovi il ticket dall'array dei ticket nel frontend
+          const index = this.tickets.findIndex(
+            ticket => ticket.id === ticketId
+          );
+          if (index !== -1) {
+            this.tickets.splice(index, 1);
+          }
+          alert('Ticket eliminato con successo!');
+        } else {
+          alert("Errore durante l'eliminazione del ticket.");
+        }
+      } catch (error) {
+        console.error("Errore durante l'eliminazione del ticket:", error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert(error.response.data.message);
+        } else {
+          alert("Si è verificato un errore durante l'eliminazione del ticket.");
         }
       }
     },
