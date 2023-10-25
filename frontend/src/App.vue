@@ -10,7 +10,7 @@ export default {
     Navbar,
   },
   created() {
-    this.checkUserAuthentication();
+    // this.checkUserAuthentication();
   },
 
   methods: {

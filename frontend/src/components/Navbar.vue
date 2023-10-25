@@ -6,12 +6,13 @@
       <router-link to="/login">Login</router-link>
     </div>
 
-    <!-- Se loggato, mostra il nome utente e il menu a tendina -->
-    <div v-else>
+    <!-- Se loggato, mostra il nome utente e il menu a tendina e link per la home -->
+    <div class="logged-navbar-elements" v-else>
       <div class="navbar-element" @click="toggleDropdown">
         Ciao, {{ store.user.name }}!
         <div v-if="showDropdown" class="dropdown">
-          <a href="#">(qua magari "profilo")</a>
+          <router-link to="/">Home</router-link>
+          <router-link to="/tickets">Tickets</router-link>
           <a href="#" @click="logout">Logout</a>
         </div>
       </div>
