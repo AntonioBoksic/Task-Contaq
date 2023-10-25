@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->get('/verify-token', [AuthController::class, 'verifyToken']);
 
 
 Route::middleware('auth:sanctum')->get('/tickets', [TicketController::class, 'index']);

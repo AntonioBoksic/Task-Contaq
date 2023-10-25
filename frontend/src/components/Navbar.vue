@@ -8,7 +8,7 @@
 
     <!-- Se loggato, mostra il nome utente e il menu a tendina -->
     <div v-else>
-      <div @click="toggleDropdown">
+      <div class="navbar-element" @click="toggleDropdown">
         Ciao, {{ store.user.name }}!
         <div v-if="showDropdown" class="dropdown">
           <a href="#">(qua magari "profilo")</a>
@@ -61,9 +61,9 @@ export default {
         store.token = null;
         store.user = null;
 
-        // reindirizza l'utente alla pagina di login
+        // reindirizza l'utente alla homepage
         console.log(response.data.message);
-        this.$router.push('/login');
+        this.$router.push('/');
       } catch (error) {
         console.error('Errore durante il logout:', error);
       }
@@ -74,17 +74,23 @@ export default {
 
 <style scoped>
 nav {
+  padding: 10px;
   display: flex;
   justify-content: end;
   align-items: center;
   width: 100%;
-  border: 1px solid white;
+
   height: 5vh;
+  box-shadow: 0px 5px 5px rgba(120, 120, 120, 0.5);
 }
 
 nav a {
-  padding: 5px;
+  padding: 10px;
   cursor: pointer;
+}
+
+.navbar-element {
+  padding: 10px;
 }
 
 .dropdown {

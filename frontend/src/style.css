@@ -75,3 +75,50 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.login-container, .register-container {
+    padding: 10px;
+    width: 100%;
+    /* border: white 1px solid; */
+    height: 95vh;
+    max-height: 95vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-container{
+    border: white 1px solid;
+    border-radius: 10px;
+    padding: 10px;
+    width: 30%;
+}
+
+.form-container h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.form-container input{
+    padding: 3px;
+
+}
+
+.form-container button {
+
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+
+}
+
+.button-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    margin-top: 20px;
+}

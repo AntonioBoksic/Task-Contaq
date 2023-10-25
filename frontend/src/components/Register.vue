@@ -1,43 +1,47 @@
 <template>
   <div class="register-container">
-    <h2>Registrazione</h2>
+    <div class="form-container">
+      <h2>Registrazione</h2>
 
-    <form @submit.prevent="registerUser">
-      <div>
-        <label for="email">Email:</label>
-        <input type="text" id="email" v-model="email" required />
-      </div>
+      <form @submit.prevent="registerUser">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="text" id="email" v-model="email" required />
+        </div>
 
-      <div>
-        <label for="name">Nome e cognome:</label>
-        <input type="text" id="name" v-model="name" required />
-      </div>
+        <div class="form-group">
+          <label for="name">Nome e cognome:</label>
+          <input type="text" id="name" v-model="name" required />
+        </div>
 
-      <div>
-        <label for="role">Ruolo:</label>
-        <select id="role" v-model="role" required>
-          <option value="">Seleziona un ruolo</option>
-          <option value="operator">Operatore</option>
-          <option value="technician">Tecnico</option>
-        </select>
-      </div>
+        <div class="form-group">
+          <label for="role">Ruolo:</label>
+          <select id="role" v-model="role" required>
+            <option value="">Seleziona un ruolo</option>
+            <option value="operator">Operatore</option>
+            <option value="technician">Tecnico</option>
+          </select>
+        </div>
 
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
 
-      <div>
-        <label for="password_confirmation">Conferma password:</label>
-        <input
-          type="password"
-          id="password_confirmation"
-          v-model="password_confirmation"
-          required />
-      </div>
+        <div class="form-group">
+          <label for="password_confirmation">Conferma password:</label>
+          <input
+            type="password"
+            id="password_confirmation"
+            v-model="password_confirmation"
+            required />
+        </div>
 
-      <button type="submit">Registrati</button>
-    </form>
+        <div class="button-wrapper">
+          <button type="submit">Registrati</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 

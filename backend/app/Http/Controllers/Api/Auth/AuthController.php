@@ -11,6 +11,9 @@ use Illuminate\Validation\ValidationException;
 // l'assenza di questo non mi dava errore durante login anche se crea un cookie ma mi dava problemi durante logout, da capire perchè
 use Illuminate\Support\Facades\Cookie;
 
+// questo serve per le date, a me per fare controllo validità token
+use Carbon\Carbon;
+
 
 class AuthController extends Controller
 {
@@ -49,6 +52,8 @@ class AuthController extends Controller
 
         $token = auth()->user()->createToken('API Token')->plainTextToken;
 
+        \Log::info('Token generato al login:', [$token]);
+        
         $userData = auth()->user();
 
         return response()->json(['success' => true,'token' => $token, 'user' => $userData, 'message' => 'Logged in successfully!'])
@@ -69,5 +74,56 @@ class AuthController extends Controller
         return response()->json(['message' => 'Logged out successfully!'])
                 ->withCookie(Cookie::forget('auth_token'));
     }
+
+    public function verifyToken(Request $request) {
+        \Log::info('Inizio verifica del token.');
+    
+        $authHeader = $request->header('Authorization');
+        $tokenFromHeader = str_replace('Bearer ', '', $authHeader);
+        \Log::info('Token inviato nell\'header:', [$tokenFromHeader]);
+    
+        if (!auth()->check()) {
+            \Log::info('L\'utente non è autenticato.');
+            return response()->json(['success' => false, 'message' => 'Token not valid'], 401);
+        }
+    
+        // Ottieni tutti i token dell'utente autenticato
+        $tokens = auth()->user()->tokens;
+        \Log::info('Token associati all\'utente autenticato:', $tokens->pluck('id', 'name')->toArray());
+    
+        $tokenMatch = false;
+        foreach ($tokens as $dbToken) {
+            \Log::info('Confronto del token hashato inviato con il token hashato nel database:', [hash('sha256', $tokenFromHeader), $dbToken->token]);
+            if (hash_equals(hash('sha256', $tokenFromHeader), $dbToken->token)) {
+                $tokenMatch = true;
+                break;
+            }
+        }
+    
+        if (!$tokenMatch) {
+            \Log::info('Token non trovato tra quelli dell\'utente.');
+            return response()->json(['success' => false, 'message' => 'Token not found in user tokens'], 401);
+        }
+    
+        // controlla la validità del token basata sulla sua data di creazione e validità
+        $tokenCreationDate = Carbon::parse($dbToken->created_at);
+        \Log::info('Data di creazione del token:', [$tokenCreationDate]);
+    
+        if ($tokenCreationDate->diffInMinutes(Carbon::now()) > 60) {
+            \Log::info('Token scaduto.');
+            // Token scaduto
+            return response()->json(['success' => false, 'message' => 'Token expired'], 401);
+        }
+    
+        // Ottieni l'utente associato al token
+        $user = auth()->user();
+        \Log::info('Utente associato al token:', [$user->id, $user->name]);
+    
+        return response()->json(['success' => true, 'user' => $user, 'token' => $dbToken->token]);
+    }
+    
+    
+    
+    
 }
 

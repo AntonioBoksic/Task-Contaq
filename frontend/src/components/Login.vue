@@ -1,20 +1,24 @@
 <template>
   <div class="login-container">
-    <h2>Login</h2>
+    <div class="form-container">
+      <h2>Login</h2>
 
-    <form @submit.prevent="loginUser">
-      <div>
-        <label for="email">Email:</label>
-        <input type="text" id="email" v-model="email" required />
-      </div>
+      <form @submit.prevent="loginUser">
+        <div class="form-group">
+          <label for="email">Email:</label>
+          <input type="text" id="email" v-model="email" required />
+        </div>
 
-      <div>
-        <label for="password">Password:</label>
-        <input type="password" id="password" v-model="password" required />
-      </div>
+        <div class="form-group">
+          <label for="password">Password:</label>
+          <input type="password" id="password" v-model="password" required />
+        </div>
 
-      <button type="submit">Accedi</button>
-    </form>
+        <div class="button-wrapper">
+          <button type="submit">Accedi</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -52,6 +56,8 @@ export default {
           store.isLoggedIn = true;
           store.token = response.data.token;
           store.user = response.data.user;
+          localStorage.setItem('token', response.data.token);
+          this.$router.push('/');
         } else {
           console.error('Errore durante il login:', response.data.message);
           // qua si può mostrare un messaggio di errore invece di un console log
