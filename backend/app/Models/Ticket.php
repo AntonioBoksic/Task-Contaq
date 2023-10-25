@@ -16,6 +16,13 @@ class Ticket extends Model
         'user_id',
     ];
 
+    // ho dovuto aggiungere questo perchè senno quando creo ticket nel frontend, 
+    // dal backend non manda lo status del ticket al frontend, dato che lo imposta invece all'interno del database,
+    // in altre parole il model che mando al frontend non ha status, perhè quando poi viene caricato in database è lì che gli si aggiunge lo status
+    protected $attributes = [
+        'status' => 'aperto',
+    ];
+
     // un ticket può avere solo una categoria
     public function category(){
         return $this->belongsTo(Category::class);

@@ -27,6 +27,30 @@
         </tbody>
       </table>
     </div>
+
+    <div class="create-ticket">
+      <h4>Crea un nuovo ticket</h4>
+
+      <form @submit.prevent="createTicket">
+        <div>
+          <label for="title">Title:</label>
+          <input v-model="newTicket.title" type="text" id="title" required />
+        </div>
+
+        <div>
+          <label for="category">Categoria:</label>
+          <input
+            v-model="newTicket.category_id"
+            type="number"
+            id="category"
+            required />
+        </div>
+
+        <div>
+          <button type="submit">Crea Ticket</button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
@@ -40,6 +64,10 @@ export default {
     return {
       store,
       tickets: [], // Aggiunto una proprietà per i ticket
+      newTicket: {
+        title: '',
+        category_id: '',
+      },
     };
   },
   methods: {
@@ -52,6 +80,42 @@ export default {
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
 
       return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+    async createTicket() {
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
+
+        const response = await axios.post(
+          'http://localhost:8001/api/tickets',
+          this.newTicket,
+          config
+        );
+
+        // aggiungi il nuovo ticket all'elenco
+        this.tickets.push(response.data.ticket);
+
+        // resetta il form
+        this.newTicket.title = '';
+        this.newTicket.category_id = '';
+
+        alert('Ticket creato con successo!');
+      } catch (error) {
+        console.error('Errore durante la creazione del ticket:', error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert(error.response.data.message);
+        } else {
+          alert('Si è verificato un errore nella creazione del ticket.');
+        }
+      }
     },
   },
   async mounted() {
