@@ -10,6 +10,7 @@
     <div class="logged-navbar-elements" v-else>
       <div class="navbar-element" @click="toggleDropdown">
         Ciao, {{ store.user.name }}!
+        <span class="dropdown-arrow">&#x25BC;</span>
         <div v-if="showDropdown" class="dropdown">
           <router-link to="/">Home</router-link>
           <router-link to="/tickets">Tickets</router-link>
@@ -111,5 +112,16 @@ nav a {
 
 .dropdown a:hover {
   background-color: #f1f1f1;
+}
+
+.logged-navbar-elements {
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  margin-left: 5px;
+  color: grey;
+  font-size: 1em;
+  vertical-align: middle;
 }
 </style>
