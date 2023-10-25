@@ -27,7 +27,8 @@ class MessageController extends Controller
             return response()->json(['message' => 'Accesso negato.'], 403); // 403 Forbidden
         }
     
-        $messages = $ticket->messages->sortBy('created_at');
+        // qua devo aggiungere values altrimenti al frontend non mi arrivano in ordine cronologico
+        $messages = $ticket->messages->sortBy('created_at')->values();
         return response()->json(['messages' => $messages], 200);
     }
     

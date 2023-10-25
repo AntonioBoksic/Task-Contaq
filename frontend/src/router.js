@@ -5,6 +5,7 @@ import Register from './components/Register.vue';
 import Login from './components/Login.vue';
 import HomePage from './components/HomePage.vue';
 import TicketsPage from './components/TicketsPage.vue';
+import MessagesPage from './components/MessagesPage.vue';
 
 const routes = [
     {
@@ -26,6 +27,13 @@ const routes = [
         path: '/tickets',
         name: 'TicketsPage',
         component: TicketsPage
+    },
+    {
+        path: '/tickets/:ticketId/messages',
+        name: 'MessagesPage',
+        component: MessagesPage,
+        // questo mi serve per passarmi il ticketId nel componente MessagesPage
+        props: true
     },
 ];
 

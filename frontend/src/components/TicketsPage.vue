@@ -249,7 +249,6 @@ export default {
         }
       }
     },
-
     // questa la attivo sul click "annulla" e mi annulla le modifiche fatte in caso abbia inserito qualcosa nei campi input ma non voglio procedere con la modifica
     //qui è troviamo il ticket corrente nell'array tickets e sostituiamo l'oggetto con la versione "pre-modifica" salvata in preEditTicket
     cancelEdit(ticket) {
@@ -258,6 +257,12 @@ export default {
         this.tickets[index] = JSON.parse(JSON.stringify(this.preEditTicket));
         this.tickets[index].isEditing = false;
       }
+    },
+    viewMessages(ticketId) {
+      this.$router.push({
+        name: 'MessagesPage',
+        params: { ticketId: ticketId },
+      });
     },
   },
   async mounted() {
