@@ -17,6 +17,10 @@
         <div class="button-wrapper">
           <button type="submit">Accedi</button>
         </div>
+
+        <div v-if="errorMessage" class="error-message">
+          {{ errorMessage }}
+        </div>
       </form>
     </div>
   </div>
@@ -31,6 +35,7 @@ export default {
     return {
       email: '',
       password: '',
+      errorMessage: '',
     };
   },
   methods: {
@@ -51,20 +56,24 @@ export default {
         );
 
         // gestione della risposta positiva (popolazione dello store)
-        if (response.data.success) {
-          console.log('Login effettuato con successo:', response.data);
-          store.isLoggedIn = true;
-          store.token = response.data.token;
-          store.user = response.data.user;
-          localStorage.setItem('token', response.data.token);
-          this.$router.push('/');
-        } else {
-          console.error('Errore durante il login:', response.data.message);
-          // qua si può mostrare un messaggio di errore invece di un console log
-        }
+        console.log('Login effettuato con successo:', response.data);
+        store.isLoggedIn = true;
+        store.token = response.data.token;
+        store.user = response.data.user;
+        localStorage.setItem('token', response.data.token);
+        this.$router.push('/');
       } catch (error) {
         console.error('Errore API:', error);
-        // gestisci gli errori di rete o altri errori non legati alla risposta
+        // Qui stai gestendo l'errore:
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          this.errorMessage = error.response.data.message;
+        } else {
+          this.errorMessage = 'Errore durante il login. Riprova più tardi.';
+        }
       }
     },
   },

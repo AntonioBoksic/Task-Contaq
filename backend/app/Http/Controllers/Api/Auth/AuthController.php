@@ -47,7 +47,7 @@ class AuthController extends Controller
         ]);
 
         if (!auth()->attempt($request->only('email', 'password'))) {
-            return response()->json(['message' => 'Invalid login details'], 401);
+            return response()->json(['message' => 'Invalid login details', 'success' => false], 401);
         }
 
         $token = auth()->user()->createToken('API Token')->plainTextToken;
