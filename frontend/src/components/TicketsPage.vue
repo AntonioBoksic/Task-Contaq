@@ -45,14 +45,20 @@
               <input v-model="ticket.status" type="text" />
             </td>
 
+            <!-- bottoni -->
+            <!-- se viene premuto modifica cambiano i bottoni nella riga in cui è stato cliccato modifica -->
+
             <td>
-              <!-- se viene premuto modifica cambiano i bottoni nella riga in cui è stato cliccato modifica -->
               <button v-if="!ticket.isEditing" @click="deleteTicket(ticket.id)">
                 Elimina
               </button>
               <button v-if="!ticket.isEditing" @click="startEditing(ticket)">
                 Modifica
               </button>
+              <button v-if="!ticket.isEditing" @click="viewMessages(ticket.id)">
+                Messaggi
+              </button>
+              <!-- da qui ci sono i bottoni renderizzati dopo il click di "modifica" -->
               <button v-if="ticket.isEditing" @click="confirmEdit(ticket)">
                 Conferma
               </button>
