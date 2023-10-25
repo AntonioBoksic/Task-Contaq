@@ -63,6 +63,9 @@ export default {
         store.token = null;
         store.user = null;
 
+        // Rimuovi il token da localStorage
+        localStorage.removeItem('token');
+
         // reindirizza l'utente alla homepage
         console.log(response.data.message);
         this.$router.push('/');

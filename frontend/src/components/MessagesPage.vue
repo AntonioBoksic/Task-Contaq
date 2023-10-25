@@ -42,6 +42,14 @@ export default {
       newMessageContent: '', // per memorizzare il contenuto del nuovo messaggio
     };
   },
+  //   il watch fa partire la chiamata quando app.vue viene inizializzata (ovvero recupera i dati dell'utente con la chiamata che ha in created) modificando il valore di store,isAppInitialized
+  watch: {
+    'store.isAppInitialized'(newValue) {
+      if (newValue) {
+        this.fetchMessages();
+      }
+    },
+  },
   methods: {
     formatDateTime(dateTimeString) {
       const dateObj = new Date(dateTimeString);
@@ -86,23 +94,29 @@ export default {
         }
       }
     },
+    async fetchMessages() {
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
+        const response = await axios.get(
+          `http://localhost:8001/api/tickets/${this.ticketId}/messages`,
+          config
+        );
+        this.messages = response.data.messages;
+      } catch (error) {
+        console.error('Errore nel recupero dei messaggi:', error);
+        alert('Errore nel recupero dei messaggi.');
+      }
+    },
   },
-  async mounted() {
-    try {
-      const token = store.token;
-      const config = {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      };
-      const response = await axios.get(
-        `http://localhost:8001/api/tickets/${this.ticketId}/messages`,
-        config
-      );
-      this.messages = response.data.messages;
-    } catch (error) {
-      console.error('Errore nel recupero dei messaggi:', error);
-      alert('Errore nel recupero dei messaggi.');
+  // il created parte in caso store.isAppInitialized sia già true nel momento in cui viene eseguito, questo mi serve per evitare che store.isAppInitialized diventi true prima che il watch possa accorgersene (99% delle volte sarà il watch a far partire la chiamata e non il created ma teniamolo comunque)
+  created() {
+    if (store.isAppInitialized) {
+      this.fetchMessages();
     }
   },
 };

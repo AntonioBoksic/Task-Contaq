@@ -114,6 +114,14 @@ export default {
       },
     };
   },
+  //   il watch fa partire la chiamata quando app.vue viene inizializzata (ovvero recupera i dati dell'utente con la chiamata che ha in created) modificando il valore di store,isAppInitialized
+  watch: {
+    'store.isAppInitialized'(newValue) {
+      if (newValue) {
+        this.fetchTickets();
+      }
+    },
+  },
   methods: {
     formatDateTime(dateTimeString) {
       const dateObj = new Date(dateTimeString);
@@ -264,30 +272,36 @@ export default {
         params: { ticketId: ticketId },
       });
     },
-  },
-  async mounted() {
-    console.log('partito il mounted');
-    try {
-      const token = store.token;
-      const config = {
-        headers: {
-          Authorization: 'Bearer ' + token,
-        },
-      };
+    async fetchTickets() {
+      console.log('partito il fetchTickets');
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
 
-      const response = await axios.get(
-        'http://localhost:8001/api/tickets',
-        config
-      );
-      //   invece di salvare i ticket come mi tornano dal backend:
-      //   this.tickets = response.data;
-      // gli aggiungo una proprietà isEditing = false; questo mi servirà per la modifica del ticket
-      this.tickets = response.data.map(ticket => ({
-        ...ticket,
-        isEditing: false,
-      }));
-    } catch (error) {
-      console.error('Errore durante il recupero dei ticket:', error);
+        const response = await axios.get(
+          'http://localhost:8001/api/tickets',
+          config
+        );
+        //   invece di salvare i ticket come mi tornano dal backend:
+        //   this.tickets = response.data;
+        // gli aggiungo una proprietà isEditing = false; questo mi servirà per la modifica del ticket
+        this.tickets = response.data.map(ticket => ({
+          ...ticket,
+          isEditing: false,
+        }));
+      } catch (error) {
+        console.error('Errore durante il recupero dei ticket:', error);
+      }
+    },
+  },
+  //   il created parte in caso store.isAppInitialized sia già true nel momento in cui viene eseguito, questo mi serve per evitare che store.isAppInitialized diventi true prima che il watch possa accorgersene (99% delle volte sarà il watch a far partire la chiamata e non il created ma teniamolo comunque)
+  created() {
+    if (store.isAppInitialized) {
+      this.fetchTickets();
     }
   },
 };

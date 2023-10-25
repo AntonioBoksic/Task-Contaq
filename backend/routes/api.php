@@ -36,3 +36,8 @@ Route::middleware('auth:sanctum')->delete('/tickets/{id}', [TicketController::cl
 
 Route::middleware('auth:sanctum')->get('/tickets/{ticketId}/messages', [MessageController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/tickets/{ticketId}/messages', [MessageController::class, 'store']);
+
+// questa la chiamo ogni volta che faccio refresh
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return response()->json(['user' => $request->user()], 200);
+});

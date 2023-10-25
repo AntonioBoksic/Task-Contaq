@@ -10,27 +10,36 @@ export default {
     Navbar,
   },
   created() {
-    // this.checkUserAuthentication();
+    this.checkUserAuthentication();
   },
 
   methods: {
-    checkUserAuthentication() {
-      console.log('Sto per effettuare la chiamata API');
-      store.token = localStorage.getItem('token');
-      console.log('Token da inviare:', store.token);
-      axios
-        .get('http://localhost:8001/api/verify-token', {
-          headers: {
-            Authorization: `Bearer ${store.token}`,
-          },
-          withCredentials: true,
-        })
-        .then(response => {
-          console.log('Risposta dal server:', response.data);
-        })
-        .catch(error => {
-          console.error('Errore durante la verifica del token:', error);
-        });
+    async checkUserAuthentication() {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          axios.defaults.headers.common['Authorization'] = 'Bearer ' + token;
+
+          const response = await axios.get('http://localhost:8001/api/user');
+
+          if (response.data.user) {
+            store.isLoggedIn = true;
+            store.user = response.data.user;
+            store.token = token;
+          }
+        }
+        //questo lo metto qui in modo da impostarlo sempre a true quando questo created finisce
+        store.isAppInitialized = true;
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          // Il token non è valido o l'utente non è autenticato
+          store.isLoggedIn = false;
+          localStorage.removeItem('token');
+          this.$router.push('/login');
+        } else {
+          console.error('Errore API:', error);
+        }
+      }
     },
   },
 };
