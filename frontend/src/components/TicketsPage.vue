@@ -19,13 +19,46 @@
         </thead>
         <tbody>
           <tr v-for="ticket in tickets" :key="ticket.id">
+            <!-- id -->
             <td>{{ ticket.id }}</td>
-            <td>{{ ticket.title }}</td>
-            <td>{{ ticket.category_id }}</td>
-            <td>{{ formatDateTime(ticket.created_at) }}</td>
-            <td>{{ ticket.status }}</td>
+
+            <!-- titolo -->
+            <td v-if="!ticket.isEditing">{{ ticket.title }}</td>
+            <td v-else>
+              <input v-model="ticket.title" type="text" />
+            </td>
+
+            <!-- category_id (poi andrà cambiato nel nome della categoria) -->
+            <td v-if="!ticket.isEditing">{{ ticket.category_id }}</td>
+            <td v-else>
+              <input v-model="ticket.category_id" type="text" />
+            </td>
+
+            <!-- created at -->
             <td>
-              <button @click="deleteTicket(ticket.id)">Elimina</button>
+              {{ formatDateTime(ticket.created_at) }}
+            </td>
+
+            <!-- status -->
+            <td v-if="!ticket.isEditing">{{ ticket.status }}</td>
+            <td v-else>
+              <input v-model="ticket.status" type="text" />
+            </td>
+
+            <td>
+              <!-- se viene premuto modifica cambiano i bottoni nella riga in cui è stato cliccato modifica -->
+              <button v-if="!ticket.isEditing" @click="deleteTicket(ticket.id)">
+                Elimina
+              </button>
+              <button v-if="!ticket.isEditing" @click="startEditing(ticket)">
+                Modifica
+              </button>
+              <button v-if="ticket.isEditing" @click="confirmEdit(ticket)">
+                Conferma
+              </button>
+              <button v-if="ticket.isEditing" @click="cancelEdit(ticket)">
+                Annulla
+              </button>
             </td>
           </tr>
         </tbody>
@@ -67,7 +100,8 @@ export default {
   data() {
     return {
       store,
-      tickets: [], // Aggiunto una proprietà per i ticket
+      tickets: [], // questi sono i dati che ottengo dopo il mounted quando chiamo la index a cui poi aggiungo,elimino o modifico nel frontend per non dover rieseguire la index dopo ogni operazione di crud
+      preEditTicket: {}, // qui salvo tickets quando premo modifica, in modo che se cambio i campi e poi premo annulla posso
       newTicket: {
         title: '',
         category_id: '',
@@ -162,6 +196,74 @@ export default {
         }
       }
     },
+    //questa la attivo sul click "modifica" che poi mi fa vedere campi input modificabili e cambi i bottoni in "conferma" e "annulla"
+    startEditing(ticket) {
+      ticket.isEditing = true;
+      // qua non posso fare this.preEditTicket = ticket ; perchè mi prende il riferimento e non il contenuto;
+      this.preEditTicket = JSON.parse(JSON.stringify(ticket));
+    },
+    // questa la attivo quando clicco su "conferma" dopo aver cliccato "modifica" e mi cambia effettivamente i dati in database
+    async editTicket(ticketId) {
+      // Trova il ticket nei dati esistenti
+      const ticketToEdit = this.tickets.find(ticket => ticket.id === ticketId);
+
+      if (ticketToEdit) {
+        // Mostra un modulo di modifica con i dettagli del ticketToEdit
+        // Popola i campi del modulo con i dati di ticketToEdit
+
+        // Esegui la richiesta di aggiornamento al backend
+        try {
+          const token = store.token;
+          const config = {
+            headers: {
+              Authorization: 'Bearer ' + token,
+            },
+          };
+
+          const response = await axios.put(
+            `http://localhost:8001/api/tickets/${ticketId}`,
+            ticketToEdit,
+            config
+          );
+
+          if (response.status === 200) {
+            // aggiorna i dati del ticket nell'array dei ticket nel frontend
+            const index = this.tickets.findIndex(
+              ticket => ticket.id === ticketId
+            );
+            if (index !== -1) {
+              this.tickets[index] = response.data.ticket;
+            }
+            alert('Ticket aggiornato con successo!');
+          } else {
+            alert("Errore durante l'aggiornamento del ticket.");
+          }
+        } catch (error) {
+          console.error("Errore durante l'aggiornamento del ticket:", error);
+          if (
+            error.response &&
+            error.response.data &&
+            error.response.data.message
+          ) {
+            alert(error.response.data.message);
+          } else {
+            alert(
+              "Si è verificato un errore durante l'aggiornamento del ticket."
+            );
+          }
+        }
+      } else {
+        alert('Ticket non trovato.');
+      }
+    },
+    // questa la attivo sul click "annulla" e mi annulla le modifiche fatte in caso abbia inserito qualcosa nei campi input ma non voglio procedere con la modifica
+    cancelEdit(ticket) {
+      const index = this.tickets.findIndex(t => t.id === ticket.id);
+      if (index !== -1) {
+        this.tickets[index] = JSON.parse(JSON.stringify(this.preEditTicket));
+        this.tickets[index].isEditing = false;
+      }
+    },
   },
   async mounted() {
     console.log('partito il mounted');
@@ -177,7 +279,13 @@ export default {
         'http://localhost:8001/api/tickets',
         config
       );
-      this.tickets = response.data; // Assumendo che la risposta contenga direttamente l'array dei ticket
+      //   invece di salvare i ticket come mi tornano dal backend:
+      //   this.tickets = response.data;
+      // gli aggiungo una proprietà isEditing = false; questo mi servirà per la modifica del ticket
+      this.tickets = response.data.map(ticket => ({
+        ...ticket,
+        isEditing: false,
+      }));
     } catch (error) {
       console.error('Errore durante il recupero dei ticket:', error);
     }
