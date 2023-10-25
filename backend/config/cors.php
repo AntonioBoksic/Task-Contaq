@@ -17,9 +17,9 @@ return [
 
     'paths' => ['api/*', 'sanctum/csrf-cookie'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['GET, POST, OPTIONS'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => ['http://localhost:5176', "http://localhost:5174"],
 
     'allowed_origins_patterns' => [],
 
@@ -29,6 +29,7 @@ return [
 
     'max_age' => 0,
 
-    'supports_credentials' => false,
+    // questo su true in teoria dovrebbe farmi mandare i cookie su un dominio diverso da quello del backend
+    'supports_credentials' => true,
 
 ];
