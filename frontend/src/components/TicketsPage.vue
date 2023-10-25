@@ -101,7 +101,7 @@ export default {
     return {
       store,
       tickets: [], // questi sono i dati che ottengo dopo il mounted quando chiamo la index a cui poi aggiungo,elimino o modifico nel frontend per non dover rieseguire la index dopo ogni operazione di crud
-      preEditTicket: {}, // qui salvo tickets quando premo modifica, in modo che se cambio i campi e poi premo annulla posso
+      preEditTicket: {}, // qui salvo tickets quando premo modifica, in modo che se cambio i campi e poi premo annulla posso riportare il valore del campo modificato al valore pre-modifca
       newTicket: {
         title: '',
         category_id: '',
@@ -203,60 +203,49 @@ export default {
       this.preEditTicket = JSON.parse(JSON.stringify(ticket));
     },
     // questa la attivo quando clicco su "conferma" dopo aver cliccato "modifica" e mi cambia effettivamente i dati in database
-    async editTicket(ticketId) {
-      // Trova il ticket nei dati esistenti
-      const ticketToEdit = this.tickets.find(ticket => ticket.id === ticketId);
+    async confirmEdit(ticket) {
+      try {
+        const token = store.token;
+        const config = {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        };
 
-      if (ticketToEdit) {
-        // Mostra un modulo di modifica con i dettagli del ticketToEdit
-        // Popola i campi del modulo con i dati di ticketToEdit
+        const response = await axios.put(
+          `http://localhost:8001/api/tickets/${ticket.id}`,
+          ticket,
+          config
+        );
 
-        // Esegui la richiesta di aggiornamento al backend
-        try {
-          const token = store.token;
-          const config = {
-            headers: {
-              Authorization: 'Bearer ' + token,
-            },
-          };
-
-          const response = await axios.put(
-            `http://localhost:8001/api/tickets/${ticketId}`,
-            ticketToEdit,
-            config
-          );
-
-          if (response.status === 200) {
-            // aggiorna i dati del ticket nell'array dei ticket nel frontend
-            const index = this.tickets.findIndex(
-              ticket => ticket.id === ticketId
-            );
-            if (index !== -1) {
-              this.tickets[index] = response.data.ticket;
-            }
-            alert('Ticket aggiornato con successo!');
-          } else {
-            alert("Errore durante l'aggiornamento del ticket.");
+        if (response.status === 200) {
+          const index = this.tickets.findIndex(t => t.id === ticket.id);
+          if (index !== -1) {
+            this.tickets[index] = response.data.ticket; // aggiorna con i dati dal server
+            this.tickets[index].isEditing = false; // esci dalla modalità di modifica
           }
-        } catch (error) {
-          console.error("Errore durante l'aggiornamento del ticket:", error);
-          if (
-            error.response &&
-            error.response.data &&
-            error.response.data.message
-          ) {
-            alert(error.response.data.message);
-          } else {
-            alert(
-              "Si è verificato un errore durante l'aggiornamento del ticket."
-            );
-          }
+          alert('Ticket aggiornato con successo!');
+        } else {
+          alert("Errore durante l'aggiornamento del ticket.");
         }
-      } else {
-        alert('Ticket non trovato.');
+      } catch (error) {
+        console.error("Errore durante l'aggiornamento del ticket:", error);
+        if (
+          error.response &&
+          error.response.data &&
+          error.response.data.message
+        ) {
+          alert(error.response.data.message);
+        } else {
+          alert(
+            "Si è verificato un errore durante l'aggiornamento del ticket."
+          );
+        }
       }
     },
+
     // questa la attivo sul click "annulla" e mi annulla le modifiche fatte in caso abbia inserito qualcosa nei campi input ma non voglio procedere con la modifica
+    //qui è troviamo il ticket corrente nell'array tickets e sostituiamo l'oggetto con la versione "pre-modifica" salvata in preEditTicket
     cancelEdit(ticket) {
       const index = this.tickets.findIndex(t => t.id === ticket.id);
       if (index !== -1) {
