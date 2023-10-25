@@ -127,3 +127,12 @@ button:focus-visible {
 .error-message{
     color:red
 }
+
+.create-ticket, .create-message{
+    text-align: center;
+    width: 40%;
+    margin-top: 10px;
+    margin: 0 auto;
+    margin-top: 10px;
+
+}

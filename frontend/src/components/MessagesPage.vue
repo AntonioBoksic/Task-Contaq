@@ -18,9 +18,11 @@
 
     <div class="create-message">
       <h4>Crea un nuovo messaggio</h4>
-      <textarea
-        v-model="newMessageContent"
-        placeholder="Scrivi il tuo messaggio..."></textarea>
+      <div class="form-group">
+        <textarea
+          v-model="newMessageContent"
+          placeholder="Scrivi il tuo messaggio..."></textarea>
+      </div>
       <button @click="createMessage">Invia</button>
     </div>
   </div>

@@ -75,12 +75,12 @@
       <h4>Crea un nuovo ticket</h4>
 
       <form @submit.prevent="createTicket">
-        <div>
+        <div class="form-group">
           <label for="title">Title:</label>
           <input v-model="newTicket.title" type="text" id="title" required />
         </div>
 
-        <div>
+        <div class="form-group">
           <label for="category">Categoria:</label>
           <input
             v-model="newTicket.category_id"
