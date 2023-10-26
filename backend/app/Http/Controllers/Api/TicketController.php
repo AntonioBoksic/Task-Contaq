@@ -99,6 +99,10 @@ class TicketController extends Controller
 
         $ticket->save();
 
+         // Carica la relazione con la categoria prima di restituire il ticket.
+         //stessa cosa che facciamo nella store, dove spiego perchè usiamo load e non with
+        $ticket->load('category');
+
         return response()->json(['ticket' => $ticket, 'message' => 'Ticket aggiornato con successo!']);
     }
 

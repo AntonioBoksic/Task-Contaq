@@ -32,7 +32,14 @@
             <!-- category_id (poi andrà cambiato nel nome della categoria) -->
             <td v-if="!ticket.isEditing">{{ ticket.category.name }}</td>
             <td v-else>
-              <input v-model="ticket.category.name" type="text" />
+              <select v-model="ticket.category_id">
+                <option
+                  v-for="category in categories"
+                  :key="category.id"
+                  :value="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
             </td>
 
             <!-- created at -->
@@ -330,9 +337,21 @@ h3 {
   display: flex;
   flex-direction: column;
   padding: 20px;
+  max-height: 50vh;
 }
 
 .tickets-table {
   text-align: center;
+}
+
+.tickets-table input {
+  width: 100%; /* occupa l'intero spazio disponibile della cella */
+  box-sizing: border-box;
+  padding: 4px;
+  max-width: 150px;
+}
+
+.tickets-table td {
+  white-space: nowrap; /* questo è fondamentale per non far diventare il campo input più largo di come era la sua colonna prima di diventare un input */
 }
 </style>
