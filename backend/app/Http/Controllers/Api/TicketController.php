@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
 use App\Models\Ticket;
+use App\Models\Category;
 
 
 class TicketController extends Controller
@@ -19,9 +20,10 @@ class TicketController extends Controller
             $tickets = $user->tickets()->with('category')->get();
 
         }
+        // mi mando pure tutte le categorie in modo da poter far vedere all0'utente in fase di creazione ticket tutte le varie opzioni
+        $categories = Category::all();
         
-        return response()->json($tickets);
-    }
+        return response()->json(['tickets' => $tickets, 'categories' => $categories]);    }
 
     public function show(Ticket $ticket) {
         $user = auth()->user();

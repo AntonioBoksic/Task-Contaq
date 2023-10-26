@@ -5,6 +5,7 @@
     </h2>
     <h3>Qui puoi vedere i ticket</h3>
 
+    <!-- container ticket salvati in database o creati  in frontend-->
     <div class="tickets-container">
       <table class="tickets-table">
         <thead>
@@ -70,6 +71,7 @@
       </table>
     </div>
 
+    <!-- creazione nuovo ticket -->
     <div class="create-ticket">
       <h4>Crea un nuovo ticket</h4>
 
@@ -81,11 +83,14 @@
 
         <div class="form-group">
           <label for="category">Categoria:</label>
-          <input
-            v-model="newTicket.category_id"
-            type="number"
-            id="category"
-            required />
+          <select v-model="newTicket.category_id" id="category" required>
+            <option
+              v-for="category in categories"
+              :key="category.id"
+              :value="category.id">
+              {{ category.name }}
+            </option>
+          </select>
         </div>
 
         <div>
@@ -105,19 +110,20 @@ export default {
   data() {
     return {
       store,
-      tickets: [], // questi sono i dati che ottengo dopo il mounted quando chiamo la index a cui poi aggiungo,elimino o modifico nel frontend per non dover rieseguire la index dopo ogni operazione di crud
+      tickets: [], // questi sono i dati che ottengo dopo il created quando chiamo la index a cui poi aggiungo,elimino o modifico nel frontend per non dover rieseguire la index dopo ogni operazione di crud
       preEditTicket: {}, // qui salvo tickets quando premo modifica, in modo che se cambio i campi e poi premo annulla posso riportare il valore del campo modificato al valore pre-modifca
       newTicket: {
         title: '',
         category_id: '',
       },
+      categories: [], //anche questi li ottengo dal created e mi servono per mostrare opzioni possibili in fase di creazione all utente
     };
   },
   //   il watch fa partire la chiamata quando app.vue viene inizializzata (ovvero recupera i dati dell'utente con la chiamata che ha in created) modificando il valore di store,isAppInitialized
   watch: {
     'store.isAppInitialized'(newValue) {
       if (newValue) {
-        this.fetchTickets();
+        this.fetchTicketsAndCategories();
       }
     },
   },
@@ -271,7 +277,7 @@ export default {
         params: { ticketId: ticketId },
       });
     },
-    async fetchTickets() {
+    async fetchTicketsAndCategories() {
       console.log('partito il fetchTickets');
       try {
         const token = store.token;
@@ -285,13 +291,16 @@ export default {
           'http://localhost:8001/api/tickets',
           config
         );
+
         //   invece di salvare i ticket come mi tornano dal backend:
-        //   this.tickets = response.data;
-        // gli aggiungo una proprietà isEditing = false; questo mi servirà per la modifica del ticket
-        this.tickets = response.data.map(ticket => ({
+        //   this.tickets = response.data.tickets;
+        // gli aggiungo una proprietà isEditing = false; questo mi servirà per la modifica del ticket, per far apparire campi di input al posto di valori e cambiare i bottoni della riga
+
+        this.tickets = response.data.tickets.map(ticket => ({
           ...ticket,
           isEditing: false,
         }));
+        this.categories = response.data.categories;
       } catch (error) {
         console.error('Errore durante il recupero dei ticket:', error);
       }
@@ -300,7 +309,7 @@ export default {
   //   il created parte in caso store.isAppInitialized sia già true nel momento in cui viene eseguito, questo mi serve per evitare che store.isAppInitialized diventi true prima che il watch possa accorgersene (99% delle volte sarà il watch a far partire la chiamata e non il created ma teniamolo comunque)
   created() {
     if (store.isAppInitialized) {
-      this.fetchTickets();
+      this.fetchTicketsAndCategories();
     }
   },
 };
