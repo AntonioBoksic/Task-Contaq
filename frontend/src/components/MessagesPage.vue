@@ -14,9 +14,14 @@
           :key="message.id"
           :class="getMessageClass(message)">
           <strong>{{ formatDateTime(message.created_at) }}</strong>
-          <span v-if="message.user && message.user.role === 'technician'">
+          <span
+            v-if="
+              message.user.role === 'technician' ||
+              store.user.role === 'technician'
+            ">
             ({{ message.user.name }}, id: {{ message.user.id }})
           </span>
+
           <!-- contenuto del messaggio -->
           <div>
             {{ message.content }}
