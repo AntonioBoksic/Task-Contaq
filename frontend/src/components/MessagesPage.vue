@@ -9,9 +9,18 @@
 
     <div class="messages-container">
       <ul>
-        <li v-for="message in messages" :key="message.id">
-          <strong>{{ formatDateTime(message.created_at) }}</strong> --
-          {{ message.content }}
+        <li
+          v-for="message in messages"
+          :key="message.id"
+          :class="getMessageClass(message)">
+          <strong>{{ formatDateTime(message.created_at) }}</strong>
+          <span v-if="message.user && message.user.role === 'technician'">
+            ({{ message.user.name }}, id: {{ message.user.id }})
+          </span>
+          <!-- contenuto del messaggio -->
+          <div>
+            {{ message.content }}
+          </div>
         </li>
       </ul>
     </div>
@@ -60,6 +69,28 @@ export default {
       const minutes = String(dateObj.getMinutes()).padStart(2, '0');
 
       return `${day}/${month}/${year} ${hours}:${minutes}`;
+    },
+    // getMessageClass(message) determina la classe da applicare al messaggio
+    getMessageClass(message) {
+      // ------SE UTENTE LOGGATO è UN TECNICO------
+      if (this.store.user.role === 'technician') {
+        if (this.messageIsFromTechnician(message)) {
+          if (message.user_id === this.store.user.id) {
+            return 'message-self'; // messaggio inviato dall'utente corrente (technician)
+          }
+          return 'message-left'; // messaggio inviato da un altro technician
+        }
+        return 'message-right'; // messaggio inviato da un non-technician
+      } else {
+        // ------SE UTENTE LOGGATO NON è UN TECNICO------
+        return this.messageIsFromTechnician(message)
+          ? 'message-right'
+          : 'message-left';
+      }
+    },
+    // messageIsFromTechnician(message) restituisce true se messaggio è mandato da un tecnico
+    messageIsFromTechnician(message) {
+      return message.user.role === 'technician';
     },
     async createMessage() {
       try {
@@ -138,5 +169,45 @@ h3 {
   flex-direction: column;
   padding: 20px;
   max-height: 50vh;
+}
+
+.message-left {
+  text-align: left;
+  background-color: #f1f1f1; /* Un colore di sfondo per evidenziare i tuoi messaggi */
+  margin-right: 50.5%; /* Per ridurre la larghezza del messaggio e spingerlo a sinistra */
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+}
+
+.message-right {
+  text-align: left;
+  background-color: #f1f1f1; /* Un colore di sfondo per evidenziare i messaggi degli altri */
+  margin-left: 50.5%; /* Per ridurre la larghezza del messaggio e spingerlo a destra */
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+}
+
+.message-left,
+.message-right {
+  margin-top: 3px;
+  margin-bottom: 3px;
+}
+
+/* questo vale solo per il tecnico loggato, vede il suo messaggio leggermente diverso da quelli degli altri tecnici che comunque sono messi sulla sinistra dello schermo */
+.message-self {
+  text-align: left;
+  background-color: #b8b8b8;
+  margin-right: 50.5%;
+  padding: 10px;
+  border-radius: 5px;
+  color: black;
+  border: 3px solid #007bff; /* un bordo blu per distinguere i tuoi messaggi */
+}
+
+ul {
+  list-style-type: none;
+  padding-left: 0;
 }
 </style>

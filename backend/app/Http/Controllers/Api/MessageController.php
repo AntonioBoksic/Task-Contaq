@@ -17,19 +17,20 @@ class MessageController extends Controller
     
         $ticket = Ticket::find($ticketId);
     
-        // Controllo se il ticket esiste
+        // controllo se il ticket esiste
         if(!$ticket) {
             return response()->json(['message' => 'Ticket non trovato.'], 404);
         }
     
-        // Controllo per operatori: possono visualizzare solo i messaggi dei ticket che hanno creato
+        // controllo per operatori: possono visualizzare solo i messaggi dei ticket che hanno creato
         if ($user->role === 'operator' && $ticket->user_id !== $user->id) {
             return response()->json(['message' => 'Accesso negato.'], 403); // 403 Forbidden
         }
     
         // qua devo aggiungere values altrimenti al frontend non mi arrivano in ordine cronologico
-        $messages = $ticket->messages->sortBy('created_at')->values();
-        return response()->json(['messages' => $messages], 200);
+        //includo anche dati su utenti che hanno inviato il messaggio in modo da renderizzare dati utili nei messaggi
+        $messages = $ticket->messages()->with('user')->orderBy('created_at')->get();
+    return response()->json(['messages' => $messages], 200);
     }
     
 
