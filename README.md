@@ -21,3 +21,5 @@ Una volta entrati in tickets sarà possibili visualizzare tutti i messaggi relat
 Ultima cosa da notare, a seconda che si logghi come operatore o tecnico ci sono alcune piccole differenze:
 1)nella lista dei messaggi solo i tecnici vedono il nome dell'operatore nel messaggio, l'operatore giustamente non vede il proprio nome.
 2)nella fase di modifica del ticket i campi modificabili sono diversi (operatore: titolo e categoria, tecnico: stato)
+
+Notare che l'interfaccia è tutta scritta in vue, i file blade non sono stati utilizzati.
