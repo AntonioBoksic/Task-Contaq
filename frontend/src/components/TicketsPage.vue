@@ -50,7 +50,14 @@
             <!-- status -->
             <td v-if="!ticket.isEditing">{{ ticket.status }}</td>
             <td v-else>
-              <input v-model="ticket.status" type="text" />
+              <select v-model="ticket.status">
+                <option
+                  v-for="status in statuses"
+                  :key="status.value"
+                  :value="status.value">
+                  {{ status.label }}
+                </option>
+              </select>
             </td>
 
             <!-- bottoni -->
@@ -124,6 +131,12 @@ export default {
         category_id: '',
       },
       categories: [], //anche questi li ottengo dal created e mi servono per mostrare opzioni possibili in fase di creazione all utente
+      // statuses mi serve per gestire la select di status durante la modifica
+      statuses: [
+        { label: 'Aperto', value: 'aperto' },
+        { label: 'In Lavorazione', value: 'in lavorazione' },
+        { label: 'Chiuso', value: 'chiuso' },
+      ],
     };
   },
   //   il watch fa partire la chiamata quando app.vue viene inizializzata (ovvero recupera i dati dell'utente con la chiamata che ha in created) modificando il valore di store,isAppInitialized
