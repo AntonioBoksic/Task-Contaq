@@ -24,14 +24,18 @@
             <td>{{ ticket.id }}</td>
 
             <!-- titolo -->
-            <td v-if="!ticket.isEditing">{{ ticket.title }}</td>
-            <td v-else>
+            <td v-if="!ticket.isEditing || store.user.role === 'technician'">
+              {{ ticket.title }}
+            </td>
+            <td v-else-if="store.user.role === 'operator'">
               <input v-model="ticket.title" type="text" />
             </td>
 
             <!-- category_id (poi andrà cambiato nel nome della categoria) -->
-            <td v-if="!ticket.isEditing">{{ ticket.category.name }}</td>
-            <td v-else>
+            <td v-if="!ticket.isEditing || store.user.role === 'technician'">
+              {{ ticket.category.name }}
+            </td>
+            <td v-else-if="store.user.role === 'operator'">
               <select v-model="ticket.category_id">
                 <option
                   v-for="category in categories"
@@ -48,8 +52,10 @@
             </td>
 
             <!-- status -->
-            <td v-if="!ticket.isEditing">{{ ticket.status }}</td>
-            <td v-else>
+            <td v-if="!ticket.isEditing || store.user.role === 'operator'">
+              {{ ticket.status }}
+            </td>
+            <td v-else-if="store.user.role === 'technician'">
               <select v-model="ticket.status">
                 <option
                   v-for="status in statuses"
