@@ -52,6 +52,8 @@ class MessageController extends Controller
         $message->ticket_id = $ticketId;
         $message->user_id = $user->id;
         $message->save();
+
+        $message->load('user'); // carica la relazione "user" per il messaggio appena creato in modo che possa essere renderizzato senza refresh
     
         return response()->json(['message' => 'Messaggio creato con successo!', 'data' => $message], 201);
     }
