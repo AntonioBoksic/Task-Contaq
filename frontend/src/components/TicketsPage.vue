@@ -29,9 +29,9 @@
             </td>
 
             <!-- category_id (poi andrà cambiato nel nome della categoria) -->
-            <td v-if="!ticket.isEditing">{{ ticket.category_id }}</td>
+            <td v-if="!ticket.isEditing">{{ ticket.category.name }}</td>
             <td v-else>
-              <input v-model="ticket.category_id" type="text" />
+              <input v-model="ticket.category.name" type="text" />
             </td>
 
             <!-- created at -->
@@ -47,7 +47,6 @@
 
             <!-- bottoni -->
             <!-- se viene premuto modifica cambiano i bottoni nella riga in cui è stato cliccato modifica -->
-
             <td>
               <button v-if="!ticket.isEditing" @click="deleteTicket(ticket.id)">
                 Elimina

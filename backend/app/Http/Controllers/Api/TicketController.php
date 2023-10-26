@@ -14,9 +14,10 @@ class TicketController extends Controller
     public function index(Request $request) {
         $user = $request->user();
         if ($user->role === 'technician') {
-            $tickets = Ticket::all();
+            $tickets = Ticket::with('category')->get();
         } else {
-            $tickets = $user->tickets;
+            $tickets = $user->tickets()->with('category')->get();
+
         }
         
         return response()->json($tickets);
@@ -55,6 +56,11 @@ class TicketController extends Controller
         $ticket = new Ticket($data);
         $ticket->user_id = $request->user()->id;
         $ticket->save();
+
+        // carica i dati della categoria per il ticket appena creato in modo che possa renderizzare subito token.category.name nel frontend e non solo al refresh dato che viene chiamato con la index e contiene questo dato
+        //senza questo quando creo nuovo ticket nel frontend non posso visualizzarlo senza refreshare
+        // n.b. il load e il with sono simili, load si usa su un istanza, with si usa in una query
+        $ticket->load('category');
 
         return response()->json(['ticket' => $ticket, 'message' => 'Ticket creato con successo!'], 201);
     }
